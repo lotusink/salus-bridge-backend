@@ -7,8 +7,6 @@
 ![Go](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Azure%20%2B%20PostGIS-4169E1?logo=postgresql&logoColor=white)
 [![CI](https://img.shields.io/github/actions/workflow/status/lotusink/salus-bridge-backend/go_ci.yml?label=CI&branch=main)](https://github.com/lotusink/salus-bridge-backend/actions/workflows/go_ci.yml)
-![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
-![Maintained](https://img.shields.io/badge/Maintained-yes-green)
 
 Backend for **Salus Bridge** — an emergency rescue planning PWA (FIT5120 2026 S1).
 A Go BFF fronts the React client and owns all business logic; a PostgreSQL/PostGIS
