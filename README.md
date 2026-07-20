@@ -75,21 +75,21 @@ emergency-rescue-planner/
 
 ### Go BFF
 
-| Component | Choice |
-|---|---|
-| Language | Go 1.26 |
-| HTTP / routing | `net/http` |
-| WebSocket | `gorilla/websocket` |
+| Component         | Choice                         |
+|-------------------|--------------------------------|
+| Language          | Go 1.26                        |
+| HTTP / routing    | `net/http`                     |
+| WebSocket         | `gorilla/websocket`            |
 | PostgreSQL driver | `jackc/pgx/v5`, `jmoiron/sqlx` |
-| Configuration | `joho/godotenv` |
-| API documentation | `swaggo/swag` |
+| Configuration     | `joho/godotenv`                |
+| API documentation | `swaggo/swag`                  |
 
 ### Database pipeline
 
-| Component | Choice |
-|---|---|
-| Language | Python 3.12 |
-| Database | PostgreSQL + PostGIS |
+| Component        | Choice                                      |
+|------------------|---------------------------------------------|
+| Language         | Python 3.12                                 |
+| Database         | PostgreSQL + PostGIS                        |
 | Access / geo I/O | SQLAlchemy · psycopg2 · geopandas · shapely |
 
 See [`database/README.md`](emergency-rescue-planner/database/README.md) for setup
@@ -122,20 +122,20 @@ follow [`database/README.md`](emergency-rescue-planner/database/README.md)
 
 Required for the BFF:
 
-| Variable | Purpose |
-|---|---|
-| `GO_SERVICE_PORT` | TCP port (default 8080) |
-| `ENV` | `deployment` disables Swagger UI and switches CORS to `DEPLOYMENT_FRONTEND_URL`; any other value uses `LOCAL_FRONTEND_URL` |
-| `DATABASE_URL` | PostgreSQL DSN — **must include `sslmode=require`** |
-| `DEPLOYMENT_FRONTEND_URL` / `LOCAL_FRONTEND_URL` | CORS allowlist (exact origin, no wildcards) |
+| Variable                                         | Purpose                                                                                                                    |
+|--------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `GO_SERVICE_PORT`                                | TCP port (default 8080)                                                                                                    |
+| `ENV`                                            | `deployment` disables Swagger UI and switches CORS to `DEPLOYMENT_FRONTEND_URL`; any other value uses `LOCAL_FRONTEND_URL` |
+| `DATABASE_URL`                                   | PostgreSQL DSN — **must include `sslmode=require`**                                                                        |
+| `DEPLOYMENT_FRONTEND_URL` / `LOCAL_FRONTEND_URL` | CORS allowlist (exact origin, no wildcards)                                                                                |
 
 Optional (feature-gated — endpoints become unreachable when absent):
 
-| Variable | Disables on absence |
-|---|---|
-| `OPENAI_API_KEY` | `/api/ai/*`, `/api/knowledge/{transcribe,tts,voice-search}` → 404 |
-| `ANTHROPIC_API_KEY` | `/api/ai/*`, `/api/knowledge/{translate,voice-search}` → 404 |
-| `ORS_API_KEY` | `/api/route/calculate` → 503 |
+| Variable            | Disables on absence                                               |
+|---------------------|-------------------------------------------------------------------|
+| `OPENAI_API_KEY`    | `/api/ai/*`, `/api/knowledge/{transcribe,tts,voice-search}` → 404 |
+| `ANTHROPIC_API_KEY` | `/api/ai/*`, `/api/knowledge/{translate,voice-search}` → 404      |
+| `ORS_API_KEY`       | `/api/route/calculate` → 503                                      |
 
 ---
 
@@ -143,20 +143,20 @@ Optional (feature-gated — endpoints become unreachable when absent):
 
 Routes are registered in `service/go/bff/main.go`. Grouped by feature:
 
-| Group | Prefix | Notable endpoints |
-|---|---|---|
-| Health | `/health_check` | `GET /health_check` |
-| Overview | `/api/overview/*` | `geogroup` (10-min cache), `facilities` |
-| Routing | `/api/route/*` | ORS road-network route calculation |
-| Field reports | `/api/field-reports/*` | submit · confirm · list (requires `X-Volunteer-Session`) |
-| Conditions | `/api/conditions/risk-zones`, `/ws/hazards` | Risk zones + WS hazard channel (subprotocol `volunteerlink.hazards.v1`) |
-| Vulnerable persons | `/api/vulnerable-persons` | Haversine-filtered |
-| Active routes | `/api/routes/active/*` | register · delete · accept-reroute (session-scoped) |
-| Knowledge | `/api/knowledge/*` | search · articles · STT · TTS · translate · voice-search |
-| Checklist | `/api/checklist` | Disaster × disability lookup |
-| Geocoding | `/api/geocode/*` | Nominatim proxy (search + reverse) |
-| AI | `/api/ai/*` | chat · stream (SSE) |
-| Demo | `/api/demo/*` | heartbeat · hazard-demo start/stop |
-| WebSocket | `/ws`, `/ws/hazards` | echo · per-session hazard pushes |
+| Group              | Prefix                                      | Notable endpoints                                                       |
+|--------------------|---------------------------------------------|-------------------------------------------------------------------------|
+| Health             | `/health_check`                             | `GET /health_check`                                                     |
+| Overview           | `/api/overview/*`                           | `geogroup` (10-min cache), `facilities`                                 |
+| Routing            | `/api/route/*`                              | ORS road-network route calculation                                      |
+| Field reports      | `/api/field-reports/*`                      | submit · confirm · list (requires `X-Volunteer-Session`)                |
+| Conditions         | `/api/conditions/risk-zones`, `/ws/hazards` | Risk zones + WS hazard channel (subprotocol `volunteerlink.hazards.v1`) |
+| Vulnerable persons | `/api/vulnerable-persons`                   | Haversine-filtered                                                      |
+| Active routes      | `/api/routes/active/*`                      | register · delete · accept-reroute (session-scoped)                     |
+| Knowledge          | `/api/knowledge/*`                          | search · articles · STT · TTS · translate · voice-search                |
+| Checklist          | `/api/checklist`                            | Disaster × disability lookup                                            |
+| Geocoding          | `/api/geocode/*`                            | Nominatim proxy (search + reverse)                                      |
+| AI                 | `/api/ai/*`                                 | chat · stream (SSE)                                                     |
+| Demo               | `/api/demo/*`                               | heartbeat · hazard-demo start/stop                                      |
+| WebSocket          | `/ws`, `/ws/hazards`                        | echo · per-session hazard pushes                                        |
 
 **Full schema:** `GET /swagger/` (only when `ENV != "deployment"`).
