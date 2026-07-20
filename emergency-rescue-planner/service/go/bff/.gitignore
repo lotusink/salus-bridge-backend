@@ -1,0 +1,15 @@
+# Vitural Environment File
+.venv/
+# Pycharm Configuration File
+.idea/
+# The Environment File
+.env
+# Python cache
+__pycache__/
+# Example
+example/
+temp/
+.coorp/
+.design/
+setup/
+.dockerignore

@@ -1,0 +1,1740 @@
+basePath: /
+definitions:
+  checklist_engine.ChecklistResponse:
+    description: Prioritised rescue checklist for a (disaster, disability) pair.
+    properties:
+      data:
+        $ref: '#/definitions/checklist_engine.checklistResponseData'
+    type: object
+  checklist_engine.checklistResponseData:
+    properties:
+      disability_type:
+        description: Echoed disability_type from the request
+        example: Hearing Impairment
+        type: string
+      disaster_type:
+        description: Echoed disaster_type from the request
+        example: fire
+        type: string
+      items:
+        description: Server-ordered checklist items (see SQL ORDER BY in get_checklist.sql)
+        items:
+          $ref: '#/definitions/database.ChecklistRow'
+        type: array
+    type: object
+  conditions_engine.GetRiskZonesData:
+    properties:
+      zones:
+        items:
+          $ref: '#/definitions/conditions_engine.ZoneWire'
+        type: array
+    type: object
+  conditions_engine.GetRiskZonesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/conditions_engine.GetRiskZonesData'
+    type: object
+  conditions_engine.ZoneWire:
+    properties:
+      active_alert:
+        type: boolean
+      id:
+        type: string
+      label:
+        type: string
+      level:
+        type: string
+      polygon:
+        items:
+          items:
+            format: float64
+            type: number
+          type: array
+        type: array
+      source:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  database.ChecklistRow:
+    description: One prioritised rescue-checklist item for a (disaster, disability)
+      pair.
+    properties:
+      item_name:
+        description: Human-readable rescue checklist item (e.g. "Strobe-light smoke
+          alarm")
+        example: Strobe-light smoke alarm
+        type: string
+      reason:
+        description: Curator-authored explanation of why this item matters for the
+          (disaster, disability) pair
+        example: Audible alarms cannot be relied upon.
+        type: string
+    type: object
+  database.FacilityRow:
+    description: A facility point with source, category, name and GeoJSON geometry.
+    properties:
+      category:
+        description: Facility category (e.g. POLICING, AMBULANCE, hospital)
+        example: AMBULANCE
+        type: string
+      geometry:
+        description: Point geometry in GeoJSON format
+        type: object
+      name:
+        description: Facility name, may be null for some OSM entries
+        example: Royal Melbourne Hospital
+        type: string
+      source:
+        description: Data source of the facility
+        enum:
+        - official
+        - osm
+        example: official
+        type: string
+    type: object
+  external_api_manager.ChatMessage:
+    properties:
+      content:
+        type: string
+      role:
+        $ref: '#/definitions/external_api_manager.Role'
+      tool_call_id:
+        type: string
+      tool_calls:
+        items:
+          $ref: '#/definitions/external_api_manager.ToolCall'
+        type: array
+    type: object
+  external_api_manager.ChatRequest:
+    properties:
+      extra:
+        additionalProperties: {}
+        type: object
+      max_tokens:
+        type: integer
+      messages:
+        items:
+          $ref: '#/definitions/external_api_manager.ChatMessage'
+        type: array
+      model:
+        type: string
+      stream:
+        type: boolean
+      temperature:
+        type: number
+      tools:
+        items:
+          $ref: '#/definitions/external_api_manager.ToolDef'
+        type: array
+    type: object
+  external_api_manager.ChatResponse:
+    properties:
+      content:
+        type: string
+      finish_reason:
+        $ref: '#/definitions/external_api_manager.FinishReason'
+      input_tokens:
+        type: integer
+      model:
+        type: string
+      output_tokens:
+        type: integer
+      provider:
+        type: string
+      tool_calls:
+        items:
+          $ref: '#/definitions/external_api_manager.ToolCall'
+        type: array
+    type: object
+  external_api_manager.FinishReason:
+    enum:
+    - stop
+    - length
+    - tool_use
+    - error
+    type: string
+    x-enum-varnames:
+    - FinishStop
+    - FinishLength
+    - FinishToolUse
+    - FinishError
+  external_api_manager.Role:
+    enum:
+    - system
+    - user
+    - assistant
+    - tool
+    type: string
+    x-enum-varnames:
+    - RoleSystem
+    - RoleUser
+    - RoleAssistant
+    - RoleTool
+  external_api_manager.ToolCall:
+    properties:
+      arguments:
+        additionalProperties: {}
+        type: object
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  external_api_manager.ToolDef:
+    properties:
+      description:
+        type: string
+      input_schema:
+        additionalProperties: {}
+        type: object
+      name:
+        type: string
+    type: object
+  field_report_engine.ConfirmReportResponse:
+    properties:
+      data:
+        $ref: '#/definitions/field_report_engine.ConfirmReportResponseData'
+    type: object
+  field_report_engine.ConfirmReportResponseData:
+    properties:
+      affected_route:
+        type: boolean
+      confidence:
+        type: string
+      confirmed_count:
+        type: integer
+    type: object
+  field_report_engine.GetReportsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/field_report_engine.GetReportsResponseData'
+    type: object
+  field_report_engine.GetReportsResponseData:
+    properties:
+      reports:
+        items:
+          $ref: '#/definitions/field_report_engine.ReportSummary'
+        type: array
+    type: object
+  field_report_engine.ReportDetail:
+    properties:
+      body:
+        type: string
+      confidence:
+        type: string
+      confirmed_count:
+        type: integer
+      created_at:
+        description: RFC3339
+        type: string
+      id:
+        type: string
+      is_mine:
+        type: boolean
+      label:
+        type: string
+      location:
+        type: string
+      type_id:
+        type: string
+    type: object
+  field_report_engine.ReportSummary:
+    properties:
+      body:
+        type: string
+      confirmed_count:
+        type: integer
+      id:
+        type: string
+      location:
+        type: string
+      type_id:
+        type: string
+    type: object
+  field_report_engine.SubmitReportRequest:
+    properties:
+      body:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      location:
+        type: string
+      severity:
+        type: string
+      type_id:
+        type: string
+    type: object
+  field_report_engine.SubmitReportResponse:
+    properties:
+      data:
+        $ref: '#/definitions/field_report_engine.SubmitReportResponseData'
+    type: object
+  field_report_engine.SubmitReportResponseData:
+    properties:
+      confidence:
+        type: string
+      report:
+        $ref: '#/definitions/field_report_engine.ReportDetail'
+    type: object
+  geocode_engine.ReverseResponse:
+    properties:
+      data:
+        $ref: '#/definitions/geocode_engine.reverseResponseData'
+    type: object
+  geocode_engine.SearchResponse:
+    properties:
+      data:
+        $ref: '#/definitions/geocode_engine.searchResponseData'
+    type: object
+  geocode_engine.SearchResult:
+    properties:
+      label:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+  geocode_engine.reverseResponseData:
+    properties:
+      label:
+        type: string
+    type: object
+  geocode_engine.searchResponseData:
+    properties:
+      results:
+        items:
+          $ref: '#/definitions/geocode_engine.SearchResult'
+        type: array
+    type: object
+  health.CheckItem:
+    properties:
+      componentType:
+        type: string
+      observedValue:
+        type: string
+      output:
+        type: string
+      status:
+        type: string
+    type: object
+  health.Response:
+    properties:
+      checks:
+        additionalProperties:
+          items:
+            $ref: '#/definitions/health.CheckItem'
+          type: array
+        type: object
+      description:
+        type: string
+      go_version:
+        type: string
+      notes:
+        items:
+          type: string
+        type: array
+      output:
+        type: string
+      releaseId:
+        type: string
+      routes:
+        items:
+          $ref: '#/definitions/health.Route'
+        type: array
+      serviceId:
+        type: string
+      status:
+        type: string
+      uptime_seconds:
+        type: integer
+      version:
+        type: string
+    type: object
+  health.Route:
+    properties:
+      method:
+        type: string
+      path:
+        type: string
+    type: object
+  info_engine.FacilitiesRequest:
+    description: Bounding box parameters for querying facilities within a geographic
+      area.
+    properties:
+      bbox_xmax:
+        description: Maximum longitude of the bounding box (east boundary)
+        example: 145.1
+        type: number
+      bbox_xmin:
+        description: Minimum longitude of the bounding box (west boundary)
+        example: 144.9
+        type: number
+      bbox_ymax:
+        description: Maximum latitude of the bounding box (north boundary)
+        example: -37.7
+        type: number
+      bbox_ymin:
+        description: Minimum latitude of the bounding box (south boundary)
+        example: -37.9
+        type: number
+    type: object
+  info_engine.GeoAreaResponse:
+    description: 'GetGeoAreas response: all GeoAreaRow fields plus per-group vulnerability
+      statistics.'
+    properties:
+      ambulance:
+        description: Number of ambulance stations
+        example: 1
+        type: integer
+      area_code:
+        description: Area code corresponding to the aggregation level (e.g. SA2 code)
+        example: "206041122"
+        type: string
+      area_name:
+        description: Human-readable area name; sa2 name when agg_level is sa1
+        example: Melbourne CBD
+        type: string
+      autism_count:
+        description: Estimated count of autistic residents
+        example: 34
+        type: integer
+      autism_pct:
+        description: Proportion of autistic residents among total disability population
+          (%)
+        example: 2.8
+        type: number
+      autism_support_needs:
+        description: Aggregated support needs for the autism group
+        items:
+          type: string
+        type: array
+      avg_bushfire_risk:
+        description: Normalised average bushfire risk score [0, 1]
+        example: 0.42
+        type: number
+      avg_earthquake_risk:
+        description: Normalised average earthquake risk score [0, 1]
+        example: 0.08
+        type: number
+      avg_flood_risk:
+        description: Normalised average flood risk score [0, 1]
+        example: 0.31
+        type: number
+      avg_overall_risk:
+        description: Normalised overall composite risk score [0, 1]
+        example: 0.35
+        type: number
+      cognitive_count:
+        description: Estimated count of cognitively impaired residents
+        example: 218
+        type: integer
+      cognitive_pct:
+        description: Proportion of cognitively impaired residents among total disability
+          population (%)
+        example: 18.2
+        type: number
+      cognitive_support_needs:
+        description: Aggregated support needs for the cognitive group
+        items:
+          type: string
+        type: array
+      disease_breakdown:
+        description: JSON array of disease breakdown records with needs mapping
+        items:
+          type: object
+        type: array
+      fire_hydrant:
+        description: Number of fire hydrants (OSM)
+        example: 5
+        type: integer
+      fire_service:
+        description: Number of fire service stations
+        example: 1
+        type: integer
+      geometry:
+        description: Area polygon geometry in GeoJSON format
+        type: object
+      hearing_count:
+        description: Estimated count of hearing-impaired residents
+        example: 37
+        type: integer
+      hearing_pct:
+        description: Proportion of hearing-impaired residents among total disability
+          population (%)
+        example: 3.1
+        type: number
+      hearing_support_needs:
+        description: Aggregated support needs for the hearing group
+        items:
+          type: string
+        type: array
+      historical_eq_count:
+        description: Historical earthquake event count within the seasonal window
+        example: 0
+        type: integer
+      historical_fire_count:
+        description: Historical bushfire event count within the seasonal window
+        example: 3
+        type: integer
+      historical_flood_count:
+        description: Historical flood event count within the year window
+        example: 1
+        type: integer
+      hospital:
+        description: Number of hospitals (OSM)
+        example: 2
+        type: integer
+      mobility_count:
+        description: Estimated count of mobility-impaired residents
+        example: 102
+        type: integer
+      mobility_pct:
+        description: Proportion of mobility-impaired residents among total disability
+          population (%)
+        example: 8.5
+        type: number
+      mobility_support_needs:
+        description: Aggregated support needs for the mobility group
+        items:
+          type: string
+        type: array
+      other_official:
+        description: Number of other official emergency facilities
+        example: 0
+        type: integer
+      policing:
+        description: Number of policing facilities
+        example: 2
+        type: integer
+      ses:
+        description: Number of SES units
+        example: 1
+        type: integer
+      shelter:
+        description: Number of open-space shelters (OSM, category = open_space)
+        example: 3
+        type: integer
+      tot_disability:
+        description: Total population with disability (G18 census, age group Tot)
+        example: 320
+        type: integer
+      total_facilities:
+        description: Combined count of official and OSM facilities
+        example: 12
+        type: integer
+    type: object
+  info_engine.GeoRequest:
+    description: Query parameters for drilling into a specific parent region at a
+      given aggregation level.
+    properties:
+      agg_level:
+        description: Geographic aggregation level (output resolution)
+        enum:
+        - sa1
+        - sa2
+        - sa3
+        - sa4
+        - state
+        example: sa2
+        type: string
+      parent_code:
+        description: Parent area code (numeric SA code). Empty when agg_level is "state".
+        example: "10201"
+        type: string
+      parent_level:
+        description: Parent aggregation level. Empty when agg_level is "state". Must
+          be strictly higher than agg_level.
+        enum:
+        - state
+        - sa4
+        - sa3
+        - sa2
+        example: sa3
+        type: string
+      target_date:
+        description: Target date for historical disaster look back in YYYY-MM-DD format
+        example: "2026-04-16"
+        type: string
+    type: object
+  knowledge_engine.Article:
+    description: Full article including content; returned only by GetByID.
+    properties:
+      content:
+        allOf:
+        - $ref: '#/definitions/knowledge_engine.Content'
+        description: Full article body
+      disability_types:
+        description: Disability types the article addresses
+        example:
+        - mobility
+        - hearing
+        items:
+          type: string
+        type: array
+      external_url:
+        description: External URL to the original source article, if any
+        example: https://www.ses.vic.gov.au/prepare
+        type: string
+      hazards:
+        description: Hazards the article covers
+        example:
+        - bushfire
+        - flood
+        items:
+          type: string
+        type: array
+      id:
+        description: Stable article identifier (matches ^[a-z0-9-]+$)
+        example: bushfire-mobility-prep
+        type: string
+      phase:
+        description: Disaster phase the article targets
+        enum:
+        - pre
+        - during
+        - post
+        example: pre
+        type: string
+      source:
+        description: Source organisation or publication
+        example: Victoria SES
+        type: string
+      summary:
+        description: One-line summary shown in list views
+        example: Plan your evacuation route before fire season.
+        type: string
+      title:
+        description: Article title
+        example: Bushfire prep for residents with mobility limitations
+        type: string
+    type: object
+  knowledge_engine.ArticleSummary:
+    description: Lightweight article projection returned by /api/knowledge/search.
+    properties:
+      disability_types:
+        description: Disability types the article addresses
+        example:
+        - mobility
+        - hearing
+        items:
+          type: string
+        type: array
+      external_url:
+        description: External URL to the original source article, if any
+        example: https://www.ses.vic.gov.au/prepare
+        type: string
+      hazards:
+        description: Hazards the article covers
+        example:
+        - bushfire
+        - flood
+        items:
+          type: string
+        type: array
+      id:
+        description: Stable article identifier (matches ^[a-z0-9-]+$)
+        example: bushfire-mobility-prep
+        type: string
+      phase:
+        description: Disaster phase the article targets
+        enum:
+        - pre
+        - during
+        - post
+        example: pre
+        type: string
+      source:
+        description: Source organisation or publication
+        example: Victoria SES
+        type: string
+      summary:
+        description: One-line summary shown in list views
+        example: Plan your evacuation route before fire season.
+        type: string
+      title:
+        description: Article title
+        example: Bushfire prep for residents with mobility limitations
+        type: string
+    type: object
+  knowledge_engine.Content:
+    description: 'Full article body: a short intro plus an ordered list of sections.'
+    properties:
+      intro:
+        description: Short lead paragraph shown above sections
+        example: Bushfire season starts in October.
+        type: string
+      sections:
+        description: Ordered article sections
+        items:
+          $ref: '#/definitions/knowledge_engine.ContentBlock'
+        type: array
+    type: object
+  knowledge_engine.ContentBlock:
+    description: Single section inside an article body.
+    properties:
+      body:
+        description: Section body (plain text or markdown)
+        example: Pack medication, ID copies, and a torch.
+        type: string
+      heading:
+        description: Section heading
+        example: Prepare a go-bag
+        type: string
+    type: object
+  knowledge_engine.ErrorResponse:
+    description: JSON error body.
+    properties:
+      error:
+        example: article not found
+        type: string
+    type: object
+  knowledge_engine.Facets:
+    description: Facet values aggregated from the full filtered set, not the page.
+    properties:
+      disability_types:
+        description: Sorted, deduplicated union of disability_types across the filtered
+          set
+        example:
+        - autism
+        - cognitive
+        - hearing
+        - mobility
+        items:
+          type: string
+        type: array
+      hazards:
+        description: Sorted, deduplicated union of hazards across the filtered set
+        example:
+        - bushfire
+        - earthquake
+        - flood
+        - storm
+        items:
+          type: string
+        type: array
+    type: object
+  knowledge_engine.SearchResponse:
+    description: Paginated knowledge search response with inline facets.
+    properties:
+      data:
+        description: Page of article summaries (without Content)
+        items:
+          $ref: '#/definitions/knowledge_engine.ArticleSummary'
+        type: array
+      facets:
+        allOf:
+        - $ref: '#/definitions/knowledge_engine.Facets'
+        description: Facet values derived from the full filtered set
+      limit:
+        description: Echo of the page size used to produce Data
+        example: 20
+        type: integer
+      offset:
+        description: Echo of the page offset used to produce Data
+        example: 0
+        type: integer
+      total:
+        description: Total count of matched articles (before pagination)
+        example: 7
+        type: integer
+    type: object
+  persons_engine.GetVulnerablePersonsData:
+    properties:
+      persons:
+        items:
+          $ref: '#/definitions/persons_engine.PersonWire'
+        type: array
+    type: object
+  persons_engine.GetVulnerablePersonsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/persons_engine.GetVulnerablePersonsData'
+    type: object
+  persons_engine.PersonDestinationWire:
+    properties:
+      label:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+  persons_engine.PersonWire:
+    properties:
+      address:
+        type: string
+      cta_label:
+        type: string
+      destination:
+        $ref: '#/definitions/persons_engine.PersonDestinationWire'
+      id:
+        type: string
+      label:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      needs:
+        items:
+          type: string
+        type: array
+      needs_summary:
+        type: string
+      support_guide_id:
+        type: string
+    type: object
+  route_engine.GeoJSONGeometry:
+    properties:
+      coordinates:
+        items:
+          items:
+            format: float64
+            type: number
+          type: array
+        type: array
+      type:
+        type: string
+    type: object
+  route_engine.LatLng:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+  route_engine.RouteData:
+    properties:
+      bbox:
+        items:
+          type: number
+        type: array
+      distance_metres:
+        type: number
+      duration_seconds:
+        type: number
+      geometry:
+        $ref: '#/definitions/route_engine.GeoJSONGeometry'
+      steps:
+        items:
+          $ref: '#/definitions/route_engine.RouteStep'
+        type: array
+    type: object
+  route_engine.RouteRequest:
+    properties:
+      avoid_zone_ids:
+        items:
+          type: string
+        type: array
+      destination:
+        $ref: '#/definitions/route_engine.LatLng'
+      origin:
+        $ref: '#/definitions/route_engine.LatLng'
+      transport:
+        type: string
+      waypoints:
+        items:
+          $ref: '#/definitions/route_engine.LatLng'
+        type: array
+    type: object
+  route_engine.RouteResponse:
+    properties:
+      data:
+        $ref: '#/definitions/route_engine.RouteResponseData'
+    type: object
+  route_engine.RouteResponseData:
+    properties:
+      affected_zone_ids:
+        items:
+          type: string
+        type: array
+      route:
+        $ref: '#/definitions/route_engine.RouteData'
+    type: object
+  route_engine.RouteStep:
+    properties:
+      distance_m:
+        type: number
+      duration_sec:
+        type: number
+      instruction:
+        type: string
+      maneuver_type:
+        type: string
+      way_point_index:
+        type: integer
+    type: object
+  translation_engine.LanguageOption:
+    description: BCP-47 language code and its English display name.
+    properties:
+      code:
+        description: BCP-47 language code passed as target_language to POST /api/knowledge/translate
+        example: zh-CN
+        type: string
+      name:
+        description: English display name shown in the language-selection UI
+        example: Simplified Chinese
+        type: string
+    type: object
+  translation_engine.TTSRequest:
+    description: 'TTS input: text to speak, voice selection, and optional model /
+      speed overrides.'
+    properties:
+      model:
+        description: TTS model; defaults to tts-1
+        enum:
+        - tts-1
+        - tts-1-hd
+        example: tts-1
+        type: string
+      speed:
+        description: Speech speed multiplier (0.25–4.0); 0 uses the provider default
+          (1.0)
+        example: 1
+        type: number
+      text:
+        description: Text to synthesise into speech
+        example: Residents in the flood zone must evacuate before 6 pm.
+        type: string
+      voice:
+        description: Voice ID to use; defaults to alloy
+        enum:
+        - alloy
+        - echo
+        - fable
+        - onyx
+        - nova
+        - shimmer
+        example: alloy
+        type: string
+    type: object
+  translation_engine.TranscribeResponse:
+    description: Transcription result including the BCP-47 detected language code.
+    properties:
+      detected_language:
+        description: BCP-47 language code detected by Whisper (e.g. en, zh, fr)
+        example: en
+        type: string
+      text:
+        description: Full transcribed text from the audio file
+        example: Residents in the flood zone must evacuate before 6 pm.
+        type: string
+    type: object
+  translation_engine.TranslateRequest:
+    description: 'Translation input: source text, BCP-47 target language, and optional
+      model override.'
+    properties:
+      model:
+        description: Claude model to use; defaults to claude-haiku-4-5
+        example: claude-haiku-4-5
+        type: string
+      target_language:
+        description: BCP-47 target language code
+        example: zh-CN
+        type: string
+      text:
+        description: Source text to translate
+        example: Residents in the flood zone must evacuate before 6 pm.
+        type: string
+    type: object
+  translation_engine.TranslateResponse:
+    description: Translation result.
+    properties:
+      detected_source_language:
+        description: BCP-47 source language code detected during translation (reserved;
+          not populated)
+        example: en
+        type: string
+      translated_text:
+        description: Translated text in the requested target language
+        example: 洪水区居民必须在下午6点前撤离。
+        type: string
+    type: object
+  voice_search_engine.VoiceSearchIntent:
+    properties:
+      disability_types:
+        description: Disability-type filters extracted from the transcript
+        items:
+          type: string
+        type: array
+      hazards:
+        description: Hazard filters extracted from the transcript
+        items:
+          type: string
+        type: array
+      phase:
+        description: Disaster phase filter; one of "pre", "during", "post", or ""
+          if not detected
+        type: string
+      q:
+        description: Free-text keyword passed to the knowledge search
+        type: string
+    type: object
+  voice_search_engine.VoiceSearchResponse:
+    description: Voice search result combining the raw transcript, the extracted intent,
+      and matching articles.
+    properties:
+      intent:
+        allOf:
+        - $ref: '#/definitions/voice_search_engine.VoiceSearchIntent'
+        description: 'Structured intent extracted by Claude; falls back to {q: transcript}
+          when extraction fails'
+      results:
+        allOf:
+        - $ref: '#/definitions/knowledge_engine.SearchResponse'
+        description: Knowledge search results matching the extracted intent
+      transcript:
+        description: Raw text transcribed from the audio
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Backend API for the emergency rescue planner
+  title: Emergency Rescue Planner API
+  version: "1.0"
+paths:
+  /api/ai/chat:
+    post:
+      consumes:
+      - application/json
+      description: Routes the chat request to OpenAI or Anthropic based on model prefix
+        and returns the full response.
+      parameters:
+      - description: Chat Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/external_api_manager.ChatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/external_api_manager.ChatResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Send a one-shot chat request to an AI provider
+      tags:
+      - ai
+  /api/ai/stream:
+    post:
+      consumes:
+      - application/json
+      description: Routes the streaming chat request to OpenAI or Anthropic and forwards
+        each delta as an SSE data frame.
+      parameters:
+      - description: Chat Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/external_api_manager.ChatRequest'
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE stream of StreamChunk frames
+          schema:
+            type: string
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Stream chat completions over SSE
+      tags:
+      - ai
+  /api/checklist:
+    get:
+      description: Returns the prioritised checklist of rescue items and reasons for
+        the given disaster_type and disability_type.
+      parameters:
+      - description: Disaster type
+        enum:
+        - fire
+        - earthquake
+        - flood
+        in: query
+        name: disaster_type
+        required: true
+        type: string
+      - description: Disability type — one of the 15 canonical NDIS-style labels (e.g.
+          Hearing Impairment, Autism, Other Sensory/Speech); case-sensitive, exact
+          match
+        in: query
+        name: disability_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/checklist_engine.ChecklistResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: query failed
+          schema:
+            type: string
+      summary: Get rescue checklist for a (disaster, disability) pair
+      tags:
+      - checklist
+  /api/conditions/risk-zones:
+    get:
+      description: Returns seeded Melbourne risk zones filtered by haversine distance
+        from (lat, lng).
+      parameters:
+      - description: Origin latitude (-90 to 90)
+        in: query
+        name: lat
+        type: number
+      - description: Origin longitude (-180 to 180)
+        in: query
+        name: lng
+        type: number
+      - description: Search radius in km (default 100)
+        in: query
+        name: radius
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/conditions_engine.GetRiskZonesResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+      summary: List risk zones near a coordinate
+      tags:
+      - conditions
+  /api/demo/hazard-demo/start:
+    post:
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Start wall-clock hazard demo
+      tags:
+      - demo
+  /api/demo/hazard-demo/stop:
+    post:
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Stop wall-clock hazard demo
+      tags:
+      - demo
+  /api/field-reports:
+    get:
+      parameters:
+      - description: Origin latitude
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Origin longitude
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: Destination latitude
+        in: query
+        name: dest_lat
+        required: true
+        type: number
+      - description: Destination longitude
+        in: query
+        name: dest_lng
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/field_report_engine.GetReportsResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+      summary: List nearby field reports
+      tags:
+      - field-reports
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Session ID for dedupe
+        in: header
+        name: X-Volunteer-Session
+        required: true
+        type: string
+      - description: Report
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/field_report_engine.SubmitReportRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/field_report_engine.SubmitReportResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+      summary: Submit a new field report
+      tags:
+      - field-reports
+  /api/field-reports/{id}/confirm:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Report ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Session ID for dedupe
+        in: header
+        name: X-Volunteer-Session
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/field_report_engine.ConfirmReportResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "404":
+          description: report not found
+          schema:
+            type: string
+        "409":
+          description: already voted
+          schema:
+            type: string
+      summary: Confirm (peer-verify) a field report
+      tags:
+      - field-reports
+  /api/geocode/reverse:
+    get:
+      description: Proxies to Nominatim and returns a human-readable address label.
+      parameters:
+      - description: Latitude (-90 to 90)
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: Longitude (-180 to 180)
+        in: query
+        name: lng
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/geocode_engine.ReverseResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Reverse geocode coordinates to a label
+      tags:
+      - geocoding
+  /api/geocode/search:
+    get:
+      description: Proxies to Nominatim and returns normalised lat/lng/label results.
+      parameters:
+      - description: Search string
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Max results (default 5, max 50)
+        in: query
+        name: limit
+        type: integer
+      - description: ISO 3166-1 alpha-2 country code (default au)
+        in: query
+        name: country
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/geocode_engine.SearchResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Forward geocode a search string
+      tags:
+      - geocoding
+  /api/knowledge/articles/{id}:
+    get:
+      description: Returns the full article including content (intro + sections).
+        Returns 404 when id is not found.
+      parameters:
+      - description: Article id (matches ^[a-z0-9-]+$)
+        example: bushfire-mobility-prep
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/knowledge_engine.Article'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "404":
+          description: article not found
+          schema:
+            $ref: '#/definitions/knowledge_engine.ErrorResponse'
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Fetch full article by id
+      tags:
+      - knowledge
+  /api/knowledge/languages:
+    get:
+      description: Returns the hardcoded list of BCP-47 language codes and their English
+        display names that are accepted by POST /api/knowledge/translate.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/translation_engine.LanguageOption'
+            type: array
+      summary: List supported translation target languages
+      tags:
+      - knowledge
+  /api/knowledge/search:
+    get:
+      description: Returns a paginated list of article summaries plus aggregated facets
+        derived from the full filtered set.
+      parameters:
+      - description: Case-insensitive search over title/content
+        example: evacuation
+        in: query
+        name: q
+        type: string
+      - description: Disaster phase filter
+        enum:
+        - pre
+        - during
+        - post
+        example: pre
+        in: query
+        name: phase
+        type: string
+      - collectionFormat: multi
+        description: 'Filter: any-of disability types'
+        example: mobility,hearing
+        in: query
+        items:
+          type: string
+        name: disability_types
+        type: array
+      - collectionFormat: multi
+        description: 'Filter: any-of hazards'
+        example: bushfire,flood
+        in: query
+        items:
+          type: string
+        name: hazards
+        type: array
+      - description: Page size (default 20, max 100)
+        example: 20
+        in: query
+        name: limit
+        type: integer
+      - description: Page offset (default 0)
+        example: 0
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/knowledge_engine.SearchResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: search failed
+          schema:
+            type: string
+      summary: List knowledge articles by keyword and filters
+      tags:
+      - knowledge
+  /api/knowledge/transcribe:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Accepts a multipart/form-data upload with an "audio" file field
+        and optional "model"/"language" fields. Returns transcribed text and the BCP-47
+        detected language code.
+      parameters:
+      - description: Audio file (mp3, mp4, mpeg, mpga, m4a, wav, webm)
+        in: formData
+        name: audio
+        required: true
+        type: file
+      - description: 'Whisper model (default: whisper-1)'
+        example: whisper-1
+        in: formData
+        name: model
+        type: string
+      - description: Input language hint (BCP-47)
+        example: en
+        in: formData
+        name: language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/translation_engine.TranscribeResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Transcribe audio to text via Whisper
+      tags:
+      - knowledge
+  /api/knowledge/translate:
+    post:
+      consumes:
+      - application/json
+      description: Sends the input text to a Claude model with a translation system
+        prompt and returns the translated text.
+      parameters:
+      - description: Translate Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/translation_engine.TranslateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/translation_engine.TranslateResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Translate text via Claude
+      tags:
+      - knowledge
+  /api/knowledge/tts:
+    post:
+      consumes:
+      - application/json
+      description: Sends the input text to OpenAI's /audio/speech endpoint and streams
+        the audio back as audio/mpeg.
+      parameters:
+      - description: TTS Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/translation_engine.TTSRequest'
+      produces:
+      - audio/mpeg
+      responses:
+        "200":
+          description: audio/mpeg binary stream
+          schema:
+            type: file
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Convert text to speech via OpenAI TTS
+      tags:
+      - knowledge
+  /api/knowledge/voice-search:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Accepts an audio file, transcribes it via Whisper, extracts a structured
+        search intent via Claude, and returns the transcript, intent, and matching
+        articles in one response.
+      parameters:
+      - description: Audio file (mp3, mp4, mpeg, mpga, m4a, wav, webm)
+        in: formData
+        name: audio
+        required: true
+        type: file
+      - description: 'Whisper model (default: whisper-1)'
+        example: whisper-1
+        in: formData
+        name: model
+        type: string
+      - description: Input language hint (BCP-47)
+        example: en
+        in: formData
+        name: language
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/voice_search_engine.VoiceSearchResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: search failed
+          schema:
+            type: string
+        "502":
+          description: upstream error
+          schema:
+            type: string
+      summary: Voice-driven knowledge search
+      tags:
+      - knowledge
+  /api/overview/facilities:
+    post:
+      consumes:
+      - application/json
+      description: Returns all official and OSM facility point locations within the
+        given bounding box
+      parameters:
+      - description: Facilities Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/info_engine.FacilitiesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.FacilityRow'
+            type: array
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: query failed
+          schema:
+            type: string
+      summary: Get facilities within a bounding box
+      tags:
+      - info
+  /api/overview/geogroup:
+    post:
+      consumes:
+      - application/json
+      description: Returns aggregated geographic, demographic, facility, risk and
+        historical disaster data for all areas within the given bounding box
+      parameters:
+      - description: Geo Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/info_engine.GeoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/info_engine.GeoAreaResponse'
+            type: array
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: query failed
+          schema:
+            type: string
+      summary: Get aggregated geographic area data
+      tags:
+      - info
+  /api/route/calculate:
+    post:
+      consumes:
+      - application/json
+      description: Returns a road-network route with turn-by-turn steps. Requires
+        ORS_API_KEY.
+      parameters:
+      - description: Route Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/route_engine.RouteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/route_engine.RouteResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "503":
+          description: routing service unavailable
+          schema:
+            type: string
+      summary: Calculate a road-network route
+      tags:
+      - routing
+  /api/vulnerable-persons:
+    get:
+      description: Returns seeded Melbourne vulnerable persons filtered by haversine
+        distance from (lat, lng).
+      parameters:
+      - description: Origin latitude (-90 to 90)
+        in: query
+        name: lat
+        type: number
+      - description: Origin longitude (-180 to 180)
+        in: query
+        name: lng
+        type: number
+      - description: Search radius in km (default 10)
+        in: query
+        name: radius
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/persons_engine.GetVulnerablePersonsResponse'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+      summary: List vulnerable persons near a coordinate
+      tags:
+      - persons
+  /health_check:
+    get:
+      description: Returns service status, dependency state, uptime, and registered
+        routes.
+      produces:
+      - application/health+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/health.Response'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/health.Response'
+      summary: Health check
+      tags:
+      - system
+  /ws/hazards:
+    get:
+      description: Upgrade to WebSocket; subprotocol volunteerlink.hazards.v1.
+      responses: {}
+      summary: WebSocket hazard channel
+      tags:
+      - conditions
+swagger: "2.0"

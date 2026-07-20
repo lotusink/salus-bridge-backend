@@ -1,0 +1,23 @@
+# Salus Bridge — database pipeline runtime dependencies.
+#
+# Slimmed from the original environment freeze (kept verbatim as
+# requirements.freeze.txt). These are the packages the pipeline scripts
+# actually import, plus the PostgreSQL driver and geo I/O backends that
+# geopandas/SQLAlchemy require at runtime.
+#
+#   pip install -r requirements.txt
+
+SQLAlchemy==2.0.49
+psycopg2-binary==2.9.11        # PostgreSQL driver (DSN uses postgresql+psycopg2)
+python-dotenv>=1.0.0
+pandas==3.0.2
+numpy==2.4.4
+requests==2.33.1
+openpyxl==3.1.5                # pandas.read_excel (.xlsx census inputs)
+
+# Geospatial stack (geopandas + its I/O and geometry backends)
+geopandas==1.1.3
+shapely==2.1.2
+pyproj==3.7.2
+pyogrio==0.12.1
+GeoAlchemy2==0.18.4            # geometry columns when writing to PostGIS
